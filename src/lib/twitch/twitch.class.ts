@@ -1,14 +1,26 @@
 import { Chat } from './chat.class';
 import * as tmi from 'tmi.js';
-
+export interface TwitchOptions {
+  ignoreSelf?: boolean;
+}
 export class Twitch {
-  channels: Chat[];
-  constructor(on: tmi.Client['on'], channels: string[] = []) {
-    this.channels = channels.map((c) => new Chat(c));
+  channels: Chat[] = [];
+  username: string;
+  options: TwitchOptions = {};
+  constructor(
+    on: tmi.Client['on'],
+    channels: string[] = [],
+    username: string,
+    options?: TwitchOptions,
+  ) {
+    console.log(username);
+    this.username = username;
+    channels.map((c) => this.addChannel(c));
+    this.options = options || this.options;
     on('message', this.handleMessage.bind(this));
   }
   addChannel(channel: string) {
-    this.channels.push(new Chat(channel));
+    this.channels.push(new Chat(channel, this.username, this));
   }
   handleMessage(
     channel: string,
