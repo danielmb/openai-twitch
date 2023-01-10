@@ -1,7 +1,7 @@
 // tsconfig.json
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2022",
     "module": "es2022",
     "moduleResolution": "node",
     "lib": ["es2020"],
@@ -14,6 +14,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   }
 }
