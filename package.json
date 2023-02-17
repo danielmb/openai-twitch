@@ -3,8 +3,10 @@
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.11.18",
     "@types/tmi.js": "^1.8.2",
+    "chatgpt": "^4.4.1",
     "dotenv": "^16.0.3",
     "mongodb": "^4.13.0",
+    "nodemon": "^2.0.20",
     "openai": "^3.1.0",
     "tmi.js": "^1.8.5",
     "typed-emitter": "^2.1.0",
@@ -14,7 +16,10 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon --watch src --exec \"npm run build && node dist/index.js\""
   },
   "keywords": [],
   "author": "",

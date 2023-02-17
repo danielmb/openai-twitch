@@ -44,7 +44,7 @@ export class OpenAI {
     return this;
   }
   async complete(prompt: string) {
-    return await this.openai.createCompletion({
+    let res = await this.openai.createCompletion({
       model: this.model,
       prompt,
       max_tokens: this.maxTokens,
@@ -54,5 +54,30 @@ export class OpenAI {
       presence_penalty: this.presencePenalty,
       stop: this.stop,
     });
+    let responseClass = new OpenAIResponse();
+    if (res.data.choices) {
+      res.data.choices.forEach((choice) => {
+        if (choice.text) responseClass.addData(choice.text);
+      });
+    }
+    return responseClass;
+  }
+}
+
+export class OpenAIResponse {
+  responses: string[] = [];
+  constructor(data?: string[]) {
+    if (data) {
+      this.responses = data;
+    }
+  }
+  addData(data: string) {
+    this.responses.push(data);
+  }
+  hasResponse() {
+    return this.responses.length > 0;
+  }
+  getFirstResponse() {
+    return this.responses[0];
   }
 }

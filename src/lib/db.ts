@@ -12,11 +12,10 @@ export const connect = async () => {
   if (cachedDb) return cachedDb;
   if (cachedClient) return cachedClient.db();
   const client = new MongoClient(process.env.MONGO_URL as string, {});
-  console.log('connecting to db' + process.env.MONGO_URL);
+  console.log('connecting to db ' + process.env.MONGO_URL);
   await client.connect();
   cachedClient = client;
   cachedDb = client.db();
-  console.log('connected to db' + process.env.MONGO_URL);
   return cachedDb;
 };
 
@@ -52,5 +51,11 @@ export const dbGetMessages = async (channel: string) => {
     })
     .toArray();
 
+  return result;
+};
+export const dbGetAllMessages = async () => {
+  const db = await connect();
+  const collection = db.collection<IMessageDB>('messages');
+  const result = await collection.find().toArray();
   return result;
 };

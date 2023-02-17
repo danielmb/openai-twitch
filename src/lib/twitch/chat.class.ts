@@ -3,13 +3,14 @@ import { dbAddMessage, dbGetMessages } from '../db';
 import { EventEmitter } from 'events';
 import TypedEmitter from 'typed-emitter';
 import * as dotenv from 'dotenv';
-import { Twitch, TwitchOptions } from './twitch.class';
+import { Twitch } from './twitch.class';
 
 dotenv.config();
 
 type ChatEvents = {
   mention: (message: Message) => void;
 };
+
 export class Chat {
   username: string;
   messages: Message[] = [];
@@ -17,9 +18,10 @@ export class Chat {
   channel: string;
   events: TypedEmitter<ChatEvents> =
     new EventEmitter() as TypedEmitter<ChatEvents>;
-  blacklist: string[] = [
+  chatFilter?: (message: IMessage) => boolean = () => true;
+  blacklist: Lowercase<string>[] = [
     'nightbot',
-    'Fossabot',
+    'fossabot',
     'streamelements',
     'streamlabs',
     'moobot',
@@ -39,11 +41,17 @@ export class Chat {
     });
   }
   addMessage(message: IMessage, db: boolean = true) {
-    if (this.blacklist.includes(message.username)) return;
+    if (
+      this.blacklist.find(
+        (b) => b.toLowerCase() === message.username.toLowerCase(),
+      )
+    )
+      return;
     if (message.message.startsWith('!')) return;
+    if (this.chatFilter && !this.chatFilter(message)) return;
     if (db) dbAddMessage(this.channel, message);
     if (
-      message.message.toLowerCase().includes(`@${this.username}`) &&
+      message.message.toLowerCase().includes(`${this.username}`) &&
       db &&
       message.username !== this.username
     ) {
@@ -81,5 +89,8 @@ export class Chat {
   }
   getLatestMessage(): Message {
     return this.messages[this.messages.length - 1];
+  }
+  getLatestMessages(maxMessages: number = this.maxMessages): Message[] {
+    return this.messages.slice(-maxMessages);
   }
 }
