@@ -1,4 +1,5 @@
 import epicGamerResponse from './response-templates/epic-gamer-response';
+import act from './templates/act';
 import aiMessage from './templates/ai-message';
 import anitJoke from './templates/anti-joke';
 import casualChat from './templates/casual-message';
@@ -36,25 +37,33 @@ const templates: Template[] = [
   // yodaMessage,
   // orwellQuestion,
   // yodaQuestion,
-  // epicGamerChat,
+  epicGamerChat,
   // epicGamerQuestion,
   // patrickBatemanMessage,
   // patrickBatemanQuestion,
   // aiMessage,
   // urMom,
-  // smartAss,
-  // passiveAggresiveOmegalul,
-  // sarcasticReply,
+  smartAss,
+  passiveAggresiveOmegalul,
+  sarcasticReply,
   // newbie,
   // philosopherExistensialCrisis,
   // depressed,
   // twitchEmotes,
   // identical,
   // anitJoke,
-  epicGamerGoodnight,
+  // epicGamerGoodnight,
+  act,
 ];
 
 export const getRandomTemplate = (input: TemplateInput): string => {
   const template = templates[Math.floor(Math.random() * templates.length)];
+  return template(input);
+};
+
+export const generateFromTemplate = (
+  template: Template,
+  input: TemplateInput,
+) => {
   return template(input);
 };

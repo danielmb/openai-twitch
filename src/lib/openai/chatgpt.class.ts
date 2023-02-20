@@ -1,15 +1,27 @@
-import { ChatGPTAPI } from 'chatgpt';
+import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from 'chatgpt';
 import { OpenAIResponse } from './openai.class';
-if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY not set');
-let chatgpt = new ChatGPTAPI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
+interface ConstructorOptionsChatGPT {
+  apiKey?: string;
+  accessToken?: string;
+  apiReverseProxyUrl?: string;
+}
 export class ChatGPT {
-  private chatgpt: ChatGPTAPI;
+  private chatgpt: ChatGPTAPI | ChatGPTUnofficialProxyAPI;
   queue: OpenAIResponse[] = [];
-  constructor() {
-    this.chatgpt = chatgpt;
+  constructor(options: ConstructorOptionsChatGPT) {
+    if (options.apiKey) {
+      this.chatgpt = new ChatGPTAPI({
+        apiKey: options.apiKey,
+      });
+    } else if (options.accessToken && options.apiReverseProxyUrl) {
+      this.chatgpt = new ChatGPTUnofficialProxyAPI({
+        accessToken: options.accessToken,
+        apiReverseProxyUrl: options.apiReverseProxyUrl,
+      });
+    } else {
+      throw new Error('Invalid options');
+    }
   }
   async complete(prompt: string) {
     let res = new OpenAIResponse();

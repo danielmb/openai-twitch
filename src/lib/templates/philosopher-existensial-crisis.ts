@@ -6,7 +6,7 @@ const philosopherExistensialCrisis = (
 ) => `${streamerSentMessagesMessages(input)}
 
 Using these messages generate a message that will be sent
-write a reply in the style of a philosopher having a existential crisis 
+The message should be a reply in the style of a philosopher having a existential crisis 
 Do not create a username and only include the text and dont use any quotes`;
 
 export default philosopherExistensialCrisis;
