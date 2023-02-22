@@ -50,7 +50,7 @@ if (process.env.OPENAI_ACCESS_TOKEN && process.env.OPENAI_REVERSE_PROXY) {
   openai = new ChatGPT({
     accessToken: process.env.OPENAI_ACCESS_TOKEN,
     apiReverseProxyUrl: process.env.OPENAI_REVERSE_PROXY,
-  });
+  }); //?
 }
 
 if (twitch.channels[0].channel === 'vedal987') {
