@@ -4,6 +4,8 @@ import { EventEmitter } from 'events';
 import TypedEmitter from 'typed-emitter';
 import * as dotenv from 'dotenv';
 import { Twitch } from './twitch.class';
+import { Transcriber } from '../speech';
+import { Player } from './twitch-player.class';
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ export class Chat {
   channel: string;
   events: TypedEmitter<ChatEvents> =
     new EventEmitter() as TypedEmitter<ChatEvents>;
+  transcript: Transcriber;
+  twitchPlayer?: Player;
   chatFilter?: (message: IMessage) => boolean = () => true;
   blacklist: Lowercase<string>[] = [
     'nightbot',
@@ -39,6 +43,29 @@ export class Chat {
       }
       console.log(`Chat loaded ${this.messages.length} messages`);
     });
+    this.transcript = new Transcriber({
+      config: {
+        config: {
+          encoding: 'LINEAR16',
+          sampleRateHertz: 48000,
+          languageCode: 'en-US',
+          enableAutomaticPunctuation: true,
+        },
+        interimResults: false, // What does this do?
+      },
+    });
+    if (this.channel.startsWith('#')) {
+      try {
+        this.twitchPlayer = new Player(this.channel.replace('#', ''));
+        this.twitchPlayer.init().then(() => {
+          this.twitchPlayer?.player?.stdout.pipe(
+            this.transcript.recognizeStream,
+          );
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
   }
   addMessage(message: IMessage, db: boolean = true) {
     if (

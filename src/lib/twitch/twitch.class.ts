@@ -1,5 +1,7 @@
 import { Chat } from './chat.class';
 import * as tmi from 'tmi.js';
+import { Transcriber } from '../speech';
+import { Player } from './twitch-player.class';
 export interface TwitchOptions {
   ignoreSelf?: boolean;
 }
@@ -7,6 +9,7 @@ export class Twitch {
   channels: Chat[] = [];
   username: string;
   options: TwitchOptions = {};
+
   constructor(
     on: tmi.Client['on'],
     channels: string[] = [],
@@ -18,6 +21,7 @@ export class Twitch {
     channels.map((c) => this.addChannel(c));
     this.options = options || this.options;
     on('message', this.handleMessage.bind(this));
+
   }
   addChannel(channel: string) {
     this.channels.push(new Chat(channel, this.username, this));

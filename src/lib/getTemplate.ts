@@ -26,6 +26,8 @@ export interface TemplateInput {
   chatMessagesString?: string;
   channelName?: string;
   previousMessages?: string;
+  streamerTranscription?: string;
+  game?: string;
 }
 export type Template = (input: TemplateInput) => string;
 
@@ -43,9 +45,9 @@ const templates: Template[] = [
   // patrickBatemanQuestion,
   // aiMessage,
   // urMom,
-  smartAss,
-  passiveAggresiveOmegalul,
-  sarcasticReply,
+  // smartAss,
+  // passiveAggresiveOmegalul,
+  // sarcasticReply,
   // newbie,
   // philosopherExistensialCrisis,
   // depressed,

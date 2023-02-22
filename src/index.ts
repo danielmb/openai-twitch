@@ -37,12 +37,6 @@ const twitch = new Twitch(
   process.env.TWITCH_USERNAME as string,
 );
 
-const pauseKeypressToCancel = async (ms: number) => {
-  return new Promise((resolve, _reject) => {
-    setTimeout(resolve, ms);
-  });
-};
-
 let sentMessages = new Chat('sentMessages', process.env.TWITCH_USERNAME);
 // template to feed openAi with
 let openai: ChatGPT;
@@ -65,7 +59,15 @@ if (twitch.channels[0].channel === 'vedal987') {
   };
 }
 export let cachedMessage = '';
-
+twitch.channels[0].transcript.events.on('transcription', (transcription) => {
+  twitch.channels[0].addMessage({
+    username: twitch.channels[0].channel.replace(
+      '#',
+      '[Streamer voice transcription]',
+    ),
+    message: transcription.trim(),
+  });
+});
 export const generate = async () => {
   let chatMessages = twitch.channels[0].getLatestMessages(13);
   let chatMessagesString = chatMessages.map((m) => m.toString()).join('\r\n');
@@ -81,7 +83,16 @@ export const generate = async () => {
     chatMessagesString,
     previousMessages: previousMessagesString,
     channelName: twitch.channels[0].channel.replace('#', ''),
+    game: twitch.channels[0].twitchPlayer?.streamdata?.stream?.game.name,
+    streamerTranscription: twitch.channels[0].transcript.transcriptions
+      .slice(-5)
+      .join('\r\n'),
   });
+
+  food =
+    food +
+    `
+  you:`;
 
   const response = await openai.complete(food);
   if (response.hasResponse() && response.getFirstResponse().length < 150) {
@@ -144,6 +155,10 @@ twitch.channels[0].events.on('mention', async (message: Message) => {
     maxLength: maxLength,
     watcherName: process.env.TWITCH_USERNAME as string,
   });
+  msg =
+    msg +
+    `
+  you:`;
   const response = await openai.complete(msg);
   if (
     response.hasResponse() &&
